@@ -1,7 +1,12 @@
-import { DataSourcePluginOptionsEditorProps, onUpdateDatasourceJsonDataOptionSelect } from '@grafana/data';
+import {
+  DataSourcePluginOptionsEditorProps,
+  onUpdateDatasourceJsonDataOption,
+  onUpdateDatasourceJsonDataOptionChecked,
+  onUpdateDatasourceJsonDataOptionSelect,
+} from '@grafana/data';
 import { AuthConfig, GOOGLE_AUTH_TYPE_OPTIONS } from '@grafana/google-sdk';
 import { config } from '@grafana/runtime';
-import { Field, SecureSocksProxySettings, Select } from '@grafana/ui';
+import { Checkbox, Field, Input, SecureSocksProxySettings, Select } from '@grafana/ui';
 import React from 'react';
 import { PROCESSING_LOCATIONS } from '../constants';
 import { BigQueryOptions, BigQuerySecureJsonData } from '../types';
@@ -11,7 +16,7 @@ import { Divider } from './Divider';
 
 export type BigQueryConfigEditorProps = DataSourcePluginOptionsEditorProps<BigQueryOptions, BigQuerySecureJsonData>;
 
-export const BigQueryConfigEditor: React.FC<BigQueryConfigEditorProps> = (props) => {
+export const BigQueryConfigEditor: React.FC<BigQueryConfigEditorProps> = (props: BigQueryConfigEditorProps) => {
   const { options, onOptionsChange } = props;
   const { jsonData } = options;
 
@@ -57,6 +62,42 @@ export const BigQueryConfigEditor: React.FC<BigQueryConfigEditorProps> = (props)
             options={PROCESSING_LOCATIONS}
             onChange={onUpdateDatasourceJsonDataOptionSelect(props, 'processingLocation')}
             menuShouldPortal={true}
+          />
+        </Field>
+
+        <Field
+          label="Hide project"
+          description={
+            <span>
+              Hides the project ID from the query builder.{' '}
+              <strong>
+                Note that this is not a security mechanism, and it does not prevent users from querying the hidden
+                project via the code editor or other means.
+              </strong>
+            </span>
+          }
+        >
+          <Checkbox
+            placeholder="Hidden"
+            value={jsonData.hideProject || false}
+            onChange={onUpdateDatasourceJsonDataOptionChecked(props, 'hideProject')}
+          />
+        </Field>
+
+        <Field
+          label="Default selected project"
+          description={
+            <span>
+              The default project that will be selected when opening the query builder. Note that the Project ID (when
+              using JWT auth, or the one inferred from the default service account) will still be used to enqueue query
+              query jobs.
+            </span>
+          }
+        >
+          <Input
+            placeholder="Default project"
+            value={jsonData.defaultSelectedProject}
+            onChange={onUpdateDatasourceJsonDataOption(props, 'defaultSelectedProject')}
           />
         </Field>
 

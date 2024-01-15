@@ -7,16 +7,18 @@ import (
 )
 
 type BigQuerySettings struct {
-	DatasourceId       int64  `json:"datasourceId"`
-	ClientEmail        string `json:"clientEmail"`
-	DefaultProject     string `json:"defaultProject"`
-	FlatRateProject    string `json:"flatRateProject"`
-	TokenUri           string `json:"tokenUri"`
-	QueryPriority      string `json:"queryPriority"`
-	ProcessingLocation string `json:"processingLocation"`
-	Updated            time.Time
-	AuthenticationType string `json:"authenticationType"`
-	PrivateKeyPath     string `json:"privateKeyPath"`
+	DatasourceId           int64  `json:"datasourceId"`
+	ClientEmail            string `json:"clientEmail"`
+	DefaultProject         string `json:"defaultProject"`
+	HideProject            bool   `json:"hideProject"`
+	DefaultSelectedProject string `json:"defaultSelectedProject"`
+	FlatRateProject        string `json:"flatRateProject"`
+	TokenUri               string `json:"tokenUri"`
+	QueryPriority          string `json:"queryPriority"`
+	ProcessingLocation     string `json:"processingLocation"`
+	Updated                time.Time
+	AuthenticationType     string `json:"authenticationType"`
+	PrivateKeyPath         string `json:"privateKeyPath"`
 
 	// Saved in secure JSON
 	PrivateKey string `json:"-"`

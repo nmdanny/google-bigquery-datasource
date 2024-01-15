@@ -48,6 +48,7 @@ type BigQueryDatasource struct {
 	apiClients              sync.Map
 	bqFactory               bqServiceFactory
 	resourceManagerServices map[string]*cloudresourcemanager.Service
+	hiddenProjectIDs        map[string]struct{}
 }
 
 type ConnectionArgs struct {
@@ -94,6 +95,12 @@ func (s *BigQueryDatasource) Connect(ctx context.Context, config backend.DataSou
 			return nil, errors.WithMessage(err, "Failed to retrieve default GCE project")
 		}
 		connectionSettings.Project = defaultProject
+	}
+
+	if settings.HideProject && connectionSettings.Project != "" {
+		s.hiddenProjectIDs = map[string]struct{}{
+			connectionSettings.Project: {},
+		}
 	}
 
 	connectionKey := fmt.Sprintf("%d/%s:%s", config.ID, connectionSettings.Location, connectionSettings.Project)
@@ -287,7 +294,16 @@ func (s *BigQueryDatasource) Projects(options ProjectsArgs) ([]*cloudresourceman
 		return nil, err
 	}
 
-	return response.Projects, nil
+	var projects []*cloudresourcemanager.Project
+	for _, project := range response.Projects {
+		log.DefaultLogger.Info("Iterating over project", "projectId", project.ProjectId, "isHidden", s.IsProjectHidden(project.ProjectId))
+		if s.IsProjectHidden(project.ProjectId) {
+			continue
+		}
+		projects = append(projects, project)
+	}
+
+	return projects, nil
 }
 
 type ValidateQueryArgs struct {
@@ -374,6 +390,14 @@ func (s *BigQueryDatasource) getApi(ctx context.Context, project, location strin
 
 	return apiInstance, nil
 
+}
+
+func (s *BigQueryDatasource) IsProjectHidden(projectId string) bool {
+	if s.hiddenProjectIDs == nil {
+		return false
+	}
+	_, hidden := s.hiddenProjectIDs[projectId]
+	return hidden
 }
 
 func getDatasourceSettings(ctx context.Context) *backend.DataSourceInstanceSettings {

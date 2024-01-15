@@ -25,10 +25,14 @@ func (r *ResourceHandler) defaultProjects(rw http.ResponseWriter, req *http.Requ
 		utils.SendResponse(nil, err, rw)
 	}
 
+	if s.DefaultSelectedProject != "" {
+		utils.SendResponse(s.DefaultSelectedProject, nil, rw)
+		return
+	}
+
 	if s.AuthenticationType == "gce" {
 		if s.DefaultProject != "" {
 			utils.SendResponse(s.DefaultProject, nil, rw)
-			return
 		}
 		res, err := sdkUtils.GCEDefaultProject(req.Context(), BigQueryScope)
 		utils.SendResponse(res, err, rw)

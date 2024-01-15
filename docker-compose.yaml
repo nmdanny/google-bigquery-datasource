@@ -6,7 +6,7 @@ services:
     build:
       context: ./.config
       args:
-        grafana_version: ${GRAFANA_VERSION:-9.2.5}
+        grafana_version: ${GRAFANA_VERSION:-10.2.3}
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -19,4 +19,5 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-bigquery-datasource
+      - ./:/build
       - ./provisioning:/etc/grafana/provisioning
