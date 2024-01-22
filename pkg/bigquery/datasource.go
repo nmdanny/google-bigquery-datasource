@@ -48,6 +48,7 @@ type BigQueryDatasource struct {
 	apiClients              sync.Map
 	bqFactory               bqServiceFactory
 	resourceManagerServices map[string]*cloudresourcemanager.Service
+	hiddenProjectIDs        map[string]struct{}
 }
 
 type ConnectionArgs struct {
@@ -96,6 +97,16 @@ func (s *BigQueryDatasource) Connect(ctx context.Context, config backend.DataSou
 		connectionSettings.Project = defaultProject
 	}
 
+	if settings.ProcessingProject != "" {
+		connectionSettings.ProcessingProject = settings.ProcessingProject
+	}
+
+	if settings.HideProcessingProject && settings.ProcessingProject != "" {
+		s.hiddenProjectIDs = map[string]struct{}{
+			settings.ProcessingProject: {},
+		}
+	}
+
 	connectionKey := fmt.Sprintf("%d/%s:%s", config.ID, connectionSettings.Location, connectionSettings.Project)
 
 	if s.resourceManagerServices[fmt.Sprint(config.ID)] == nil {
@@ -139,7 +150,7 @@ func (s *BigQueryDatasource) Connect(ctx context.Context, config backend.DataSou
 			return nil, errors.WithMessage(err, "Failed to create http client")
 		}
 
-		bqClient, err := s.bqFactory(context.Background(), connectionSettings.Project, option.WithHTTPClient(client))
+		bqClient, err := s.bqFactory(context.Background(), connectionSettings.ProcessingProject, option.WithHTTPClient(client))
 		if err != nil {
 			return nil, errors.WithMessage(err, "Failed to create BigQuery client")
 		}
@@ -151,7 +162,7 @@ func (s *BigQueryDatasource) Connect(ctx context.Context, config backend.DataSou
 		}
 		s.connections.Store(connectionKey, conn{db: db, driver: dr})
 
-		apiInstance := api.New(bqClient)
+		apiInstance := api.New(bqClient, connectionSettings.Project)
 		apiInstance.SetLocation(connectionSettings.Location)
 
 		if err != nil {
@@ -287,7 +298,15 @@ func (s *BigQueryDatasource) Projects(options ProjectsArgs) ([]*cloudresourceman
 		return nil, err
 	}
 
-	return response.Projects, nil
+	var projects []*cloudresourcemanager.Project
+	for _, project := range response.Projects {
+		if s.IsProjectHidden(project.ProjectId) {
+			continue
+		}
+		projects = append(projects, project)
+	}
+
+	return projects, nil
 }
 
 type ValidateQueryArgs struct {
@@ -335,17 +354,22 @@ func (s *BigQueryDatasource) TableSchema(ctx context.Context, args TableSchemaAr
 
 func (s *BigQueryDatasource) getApi(ctx context.Context, project, location string) (*api.API, error) {
 	datasourceSettings := getDatasourceSettings(ctx)
+	settings, err := loadSettings(datasourceSettings)
+	if err != nil {
+		return nil, err
+	}
+
+	processingProject := project
+	if settings.ProcessingProject != "" {
+		processingProject = settings.ProcessingProject
+	}
+
 	connectionKey := fmt.Sprintf("%d/%s:%s", datasourceSettings.ID, location, project)
 	cClient, exists := s.apiClients.Load(connectionKey)
 
 	if exists {
 		log.DefaultLogger.Debug("Reusing existing BigQuery API client")
 		return cClient.(*api.API), nil
-	}
-
-	settings, err := loadSettings(datasourceSettings)
-	if err != nil {
-		return nil, err
 	}
 
 	httpOptions, err := datasourceSettings.HTTPClientOptions(ctx)
@@ -358,11 +382,11 @@ func (s *BigQueryDatasource) getApi(ctx context.Context, project, location strin
 		return nil, errors.WithMessage(err, "Failed to crate http client")
 	}
 
-	client, err := s.bqFactory(ctx, project, option.WithHTTPClient(httpClient))
+	client, err := s.bqFactory(ctx, processingProject, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, errors.WithMessage(err, "Failed to initialize BigQuery client")
 	}
-	apiInstance := api.New(client)
+	apiInstance := api.New(client, project)
 
 	if location != "" {
 		apiInstance.SetLocation(location)
@@ -374,6 +398,14 @@ func (s *BigQueryDatasource) getApi(ctx context.Context, project, location strin
 
 	return apiInstance, nil
 
+}
+
+func (s *BigQueryDatasource) IsProjectHidden(projectId string) bool {
+	if s.hiddenProjectIDs == nil {
+		return false
+	}
+	_, hidden := s.hiddenProjectIDs[projectId]
+	return hidden
 }
 
 func getDatasourceSettings(ctx context.Context) *backend.DataSourceInstanceSettings {

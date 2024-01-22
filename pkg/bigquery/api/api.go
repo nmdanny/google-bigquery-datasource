@@ -14,11 +14,12 @@ import (
 )
 
 type API struct {
-	Client *bq.Client
+	Client  *bq.Client
+	project string
 }
 
-func New(client *bq.Client) *API {
-	return &API{client}
+func New(client *bq.Client, project string) *API {
+	return &API{client, project}
 }
 
 func (a *API) ListDatasets(ctx context.Context) ([]string, error) {
@@ -26,6 +27,7 @@ func (a *API) ListDatasets(ctx context.Context) ([]string, error) {
 	result := []string{}
 
 	it := a.Client.Datasets(ctx)
+	it.ProjectID = a.project
 	for {
 		dataset, err := it.Next()
 		if err == iterator.Done {
@@ -42,7 +44,7 @@ func (a *API) ListDatasets(ctx context.Context) ([]string, error) {
 }
 
 func (a *API) ListTables(ctx context.Context, dataset string) ([]string, error) {
-	datasetRef := a.Client.Dataset(dataset)
+	datasetRef := a.Client.DatasetInProject(a.project, dataset)
 	result := []string{}
 
 	it := datasetRef.Tables(ctx)
@@ -62,7 +64,7 @@ func (a *API) ListTables(ctx context.Context, dataset string) ([]string, error) 
 }
 
 func (a *API) ListColumns(ctx context.Context, dataset string, table string, isOrderable bool) ([]string, error) {
-	tableMeta, err := a.Client.Dataset(dataset).Table(table).Metadata(ctx)
+	tableMeta, err := a.Client.DatasetInProject(a.project, dataset).Table(table).Metadata(ctx)
 
 	if err != nil {
 		return nil, errors.WithMessage(err, fmt.Sprintf("Failed to retrieve %s table columns", table))
@@ -74,7 +76,7 @@ func (a *API) ListColumns(ctx context.Context, dataset string, table string, isO
 }
 
 func (a *API) GetTableSchema(ctx context.Context, dataset, table string) (*types.TableMetadataResponse, error) {
-	tableMeta, err := a.Client.Dataset(dataset).Table(table).Metadata(ctx)
+	tableMeta, err := a.Client.DatasetInProject(a.project, dataset).Table(table).Metadata(ctx)
 	if err != nil {
 		return nil, errors.WithMessage(err, fmt.Sprintf("Failed to retrieve %s table metadata", table))
 	}

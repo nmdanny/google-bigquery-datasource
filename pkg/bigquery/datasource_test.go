@@ -93,7 +93,7 @@ func Test_datasourceConnection(t *testing.T) {
 
 		ds.apiClients.Store("1/us-west2:raintank-dev", api.New(&bq.Client{
 			Location: "us-west1",
-		}))
+		}, "raintank-dev"))
 
 		_, err1 := RunConnection(ds, []byte(`{"location": "us-west2"}`))
 		assert.Nil(t, err1)
@@ -118,7 +118,7 @@ func Test_datasourceConnection(t *testing.T) {
 
 		ds.apiClients.Store("1/us-west2:raintank-dev", api.New(&bq.Client{
 			Location: "us-west1",
-		}))
+		}, "raintank-dev"))
 
 		_, err1 := RunConnection(ds, []byte(`{}`))
 		assert.Nil(t, err1)
@@ -221,7 +221,7 @@ func Test_getApi(t *testing.T) {
 
 		ds.apiClients.Store("1/us-west1:raintank-dev", api.New(&bq.Client{
 			Location: "us-west1",
-		}))
+		}, "raintank-dev"))
 
 		_, err := ds.getApi(context.Background(), "raintank-dev", "us-west1")
 		assert.Nil(t, err)
