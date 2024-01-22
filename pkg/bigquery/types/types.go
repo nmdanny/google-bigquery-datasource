@@ -7,16 +7,19 @@ import (
 )
 
 type BigQuerySettings struct {
-	DatasourceId       int64  `json:"datasourceId"`
-	ClientEmail        string `json:"clientEmail"`
-	DefaultProject     string `json:"defaultProject"`
-	FlatRateProject    string `json:"flatRateProject"`
-	TokenUri           string `json:"tokenUri"`
-	QueryPriority      string `json:"queryPriority"`
-	ProcessingLocation string `json:"processingLocation"`
-	Updated            time.Time
-	AuthenticationType string `json:"authenticationType"`
-	PrivateKeyPath     string `json:"privateKeyPath"`
+	DatasourceId          int64  `json:"datasourceId"`
+	ClientEmail           string `json:"clientEmail"`
+	DefaultProject        string `json:"defaultProject"`
+	ProcessingProject     string `json:"processingProject"`
+	HideProcessingProject bool   `json:"hideProcessingProject"`
+	JobProject            string `json:"jobProject"`
+	FlatRateProject       string `json:"flatRateProject"`
+	TokenUri              string `json:"tokenUri"`
+	QueryPriority         string `json:"queryPriority"`
+	ProcessingLocation    string `json:"processingLocation"`
+	Updated               time.Time
+	AuthenticationType    string `json:"authenticationType"`
+	PrivateKeyPath        string `json:"privateKeyPath"`
 
 	// Saved in secure JSON
 	PrivateKey string `json:"-"`
@@ -25,8 +28,11 @@ type BigQuerySettings struct {
 type ConnectionSettings struct {
 	AuthenticationType string
 	Location           string
-	Project            string
-	Dataset            string
+	// project used for discovery calls
+	Project string
+	// project for performing queries. requires JobUser
+	ProcessingProject string
+	Dataset           string
 }
 type TableFieldSchema struct {
 	Name        string       `json:"name"`

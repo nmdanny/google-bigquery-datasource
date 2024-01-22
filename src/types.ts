@@ -24,6 +24,8 @@ export interface QueryRowFilter {
 
 export interface BigQueryOptions extends DataSourceOptions {
   flatRateProject?: string;
+  hideProcessingProject?: boolean;
+  processingProject?: string;
   processingLocation?: string;
   queryPriority?: QueryPriority;
   enableSecureSocksProxy?: boolean;
