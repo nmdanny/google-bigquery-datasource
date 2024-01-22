@@ -3,7 +3,6 @@ package bigquery
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/grafana/grafana-bigquery-datasource/pkg/bigquery/types"
 	"github.com/grafana/grafana-google-sdk-go/pkg/utils"
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
@@ -45,6 +44,7 @@ func loadSettings(config *backend.DataSourceInstanceSettings) (types.BigQuerySet
 func getConnectionSettings(settings types.BigQuerySettings, queryArgs *ConnectionArgs) types.ConnectionSettings {
 	connectionSettings := types.ConnectionSettings{
 		Project:            settings.DefaultProject,
+		ProcessingProject:  settings.DefaultProject,
 		Location:           settings.ProcessingLocation,
 		AuthenticationType: settings.AuthenticationType,
 	}
