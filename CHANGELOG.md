@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2
+
+- **Feature**: Allow setting the query job project, separately from the one being queried.
+
 ## 1.4.1
 
 - **Feature**: Add macros autocomplete for code editor
