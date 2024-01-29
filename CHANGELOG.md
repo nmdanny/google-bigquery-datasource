@@ -2,7 +2,7 @@
 
 ## 1.4.2
 
-- **Feature**: Allow setting the query job project, separately from the one being queried.
+- **Feature**: Allow setting & hiding the project used for performing query jobs, separately from the one shown in the query builder.
 
 ## 1.4.1
 
