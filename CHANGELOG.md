@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2
+
+- **Feature**: Allow setting & hiding the project used for performing query jobs, separately from the one shown in the query builder.
+
 ## 1.4.1
 
 - **Feature**: Add macros autocomplete for code editor
