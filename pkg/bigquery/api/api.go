@@ -92,6 +92,9 @@ func (a *API) GetTableSchema(ctx context.Context, dataset, table string) (*types
 }
 
 func (a *API) SetLocation(location string) {
+	if location == "Unspecified" {
+		location = ""
+	}
 	a.Client.Location = location
 }
 

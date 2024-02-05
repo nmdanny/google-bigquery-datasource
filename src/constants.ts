@@ -6,9 +6,11 @@ export const QUERY_FORMAT_OPTIONS = [
   { label: 'Table', value: QueryFormat.Table },
 ];
 
-export const DEFAULT_REGION = 'US';
+export const DEFAULT_REGION = 'Unspecified';
 
 export const PROCESSING_LOCATIONS: Array<SelectableValue<string>> = [
+  { label: 'Unspecified', value: DEFAULT_REGION },
+
   // Multi-regional locations
   { label: 'United States (US)', value: 'US' },
   { label: 'European Union (EU)', value: 'EU' },

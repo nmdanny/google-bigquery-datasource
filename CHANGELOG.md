@@ -1,8 +1,13 @@
 # Changelog
 
+## 1.4.3
+
+- **Fix**: No longer select 'US' as the default processing location. 
+
 ## 1.4.2
 
 - **Feature**: Allow setting the query job project, separately from the one being queried.
+- **Chore**: Add new regions to processing location.
 
 ## 1.4.1
 
