@@ -52,7 +52,7 @@ export const BigQueryConfigEditor: React.FC<BigQueryConfigEditorProps> = (props)
         >
           <Select
             className="width-30"
-            placeholder="Default US"
+            placeholder="Default Unspecified"
             value={jsonData.processingLocation || ''}
             options={PROCESSING_LOCATIONS}
             onChange={onUpdateDatasourceJsonDataOptionSelect(props, 'processingLocation')}
