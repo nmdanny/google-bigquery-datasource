@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.4
+
+- **Feature**: Hide sensitive project information from the Frontend
+
 ## 1.4.3
 
 - **Fix**: No longer select 'US' as the default processing location. 

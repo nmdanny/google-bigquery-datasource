@@ -306,6 +306,12 @@ func (s *BigQueryDatasource) Projects(options ProjectsArgs) ([]*cloudresourceman
 		projects = append(projects, project)
 	}
 
+	// Nullify sensitive project information
+	for _, project := range projects {
+		project.Parent = ""
+		project.Labels = nil
+	}
+
 	return projects, nil
 }
 
