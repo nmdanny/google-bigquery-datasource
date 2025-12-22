@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.5
+
+- **Chore**: Bump go and go dependencies
+
 ## 1.4.4
 
 - **Feature**: Hide sensitive project information from the Frontend
