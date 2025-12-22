@@ -29,7 +29,7 @@ export const widgets: Widgets = {
   ...BasicConfig.widgets,
   text: {
     ...BasicConfig.widgets.text,
-    factory: function TextInput(props) {
+    factory: function TextInput(props: any) {
       return (
         <Input
           value={props?.value || ''}
@@ -41,7 +41,7 @@ export const widgets: Widgets = {
   },
   number: {
     ...BasicConfig.widgets.number,
-    factory: function NumberInput(props) {
+    factory: function NumberInput(props: any) {
       return (
         <Input
           value={props?.value}
@@ -54,7 +54,7 @@ export const widgets: Widgets = {
   },
   datetime: {
     ...BasicConfig.widgets.datetime,
-    factory: function DateTimeInput(props) {
+    factory: function DateTimeInput(props: any) {
       return (
         <DateTimePicker
           onChange={(e) => {
