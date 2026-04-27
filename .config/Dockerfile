@@ -19,10 +19,10 @@ RUN sed -i 's/<\/body><\/html>/<script src=\"http:\/\/localhost:35729\/livereloa
 RUN apt-get -y update
 RUN apt-get -y install git build-essential
 
-RUN curl -L https://golang.org/dl/go1.21.5.linux-arm64.tar.gz > go1.21.5.linux-arm64.tar.gz
+RUN curl -L https://golang.org/dl/go1.26.2.linux-arm64.tar.gz > go1.26.2.linux-arm64.tar.gz
 
 RUN rm -rf /usr/local/go && \
-    tar -C /usr/local -xzf go1.21.5.linux-arm64.tar.gz
+    tar -C /usr/local -xzf go1.26.2.linux-arm64.tar.gz
 
 RUN touch README; printf "~~~~~~ START THE DLV SERVER WITH THIS COMMAND BEFORE RUNNING IDE DEBUGGER ~~~~~~ \r\ndlv attach --headless --listen=:2345 PID\r\n\r\n" >> README
 

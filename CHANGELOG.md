@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.6
+
+- **Chore**: Bump go to 1.26.2 and several go dependencies
+
 ## 1.4.5
 
 - **Chore**: Bump go and go dependencies
